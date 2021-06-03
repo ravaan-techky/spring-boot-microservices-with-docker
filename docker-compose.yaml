@@ -1,0 +1,47 @@
+version: '3.7'
+services:
+  currency-exchange:
+    image: ravaantechky/currency-exchange-service:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      -  8000:8000
+    networks:
+      - currency-network
+    depends_on:
+      - naming-server
+  currency-conversion:
+    image: ravaantechky/currency-conversion-service:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      -  8100:8100
+    networks:
+      - currency-network
+    depends_on:
+      - currency-exchange
+  naming-server:
+    image: ravaantechky/naming-server:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      -  8761:8761
+    networks:
+      - currency-network
+  api-gateway:
+    image: ravaantechky/api-gateway:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      -  8765:8765
+    networks:
+      - currency-network
+    depends_on:
+      - currency-conversion
+  zipkin-server:
+    image: openzipkin/zipkin:2.23
+    mem_limit: 700m
+    ports:
+      -  9411:9411
+    networks:
+      - currency-network
+    depends_on:
+      - naming-server
+networks:
+  currency-network:
